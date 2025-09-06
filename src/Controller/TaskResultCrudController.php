@@ -73,15 +73,30 @@ class TaskResultCrudController extends AbstractCrudController
         yield Field\Text::new(name: 'task_id', label: trans('Task ID'))
             ->type('number')
             ->group(trans('Task'));
+        
         yield Field\Select::new(name: 'status', label: trans('Status'))
             ->group(trans('Task'))
-            ->options(['successful' => trans('successful'), 'failed' => trans('failed'), 'skipped' => trans('skipped')]);
+            ->options([
+                'successful' => trans('successful'),
+                'failed' => trans('failed'),
+                'skipped' => trans('skipped'),
+            ])
+            ->formatValue(new Field\Formatter\Badge(classes: [
+                'successful' => 'text-success',
+                'failed' => 'text-error',
+                'skipped' => 'text-info',
+            ]));
+        
         yield Field\Text::new(name: 'run_at', label: trans('Run At'))
-            ->group(trans('Task'));
+            ->group(trans('Task'))
+            ->formatValue(new Field\Formatter\Date(format: 'EEEE, dd. MMMM yyyy, HH:mm'));
+        
         yield Field\Text::new(name: 'runtime_seconds', label: trans('Runtime In Seconds'))
             ->group(trans('Task'));
+        
         yield Field\Text::new(name: 'memory_usage_bytes', label: trans('Memory Usage In Bytes'))
             ->group(trans('Task'));
+        
         yield Field\Textarea::new(name: 'result', label: trans('Result'))
             ->group(trans('Task'));
     }
@@ -110,8 +125,11 @@ class TaskResultCrudController extends AbstractCrudController
                         ->name('more')
                         ->raw(),
                 ),
+            
             Action\Delete::new(),
+            
             Action\BulkDelete::new(),
+            
             Action\Show::new(trans('Task Result')),
         ];
     }
@@ -126,15 +144,21 @@ class TaskResultCrudController extends AbstractCrudController
     {
         return [
             ...Filter\Fields::new()->fields($action->fields())->toFilters(),
+            
             Filter\FieldsSortOrder::new(),
+            
             Filter\ModalButton::new()->group('header'),
+            
             Filter\Group::new(name: 'group-columns')->group('modal')->label(trans('Columns'))->open(false),
+            
             Filter\Columns::new()->group('group-columns'),
-            Filter\EditableColumns::new('status', 'name')->group('group-columns'),
+            
             Filter\Group::new(name: 'group-pagination')->group('modal')->label(trans('Pagination'))->open(false),
+            
             Filter\PaginationItemsPerPage::new()
                 ->group('group-pagination')
                 ->open(false),
+            
             Filter\Pagination::new(maxItemsPerPage: 2000)->group('footer'),
         ];
     }

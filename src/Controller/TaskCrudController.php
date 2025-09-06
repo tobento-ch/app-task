@@ -107,7 +107,10 @@ class TaskCrudController extends AbstractCrudController
             
             yield Field\Select::new(name: 'status', label: trans('Status'))
                 ->group(trans('Task'))
-                ->options(['active' => trans('Active'), 'pausing' => trans('Pausing')])
+                ->options([
+                    'active' => trans('active'),
+                    'pausing' => trans('pausing'),
+                ])
                 ->validate('required');
             
             foreach($registry->configureFields($action) as $registryField) {
@@ -123,10 +126,17 @@ class TaskCrudController extends AbstractCrudController
         yield Field\Text::new(name: 'name');
         
         yield Field\Select::new(name: 'status', label: trans('Status'))
-            ->options(['active' => trans('Active'), 'pausing' => trans('Pausing')]);
+            ->options([
+                'active' => trans('active'),
+                'pausing' => trans('pausing'),
+            ])
+            ->formatValue(new Field\Formatter\Badge(classes: [
+                'active' => 'text-success',
+                'pausing' => 'text-info',
+            ]));
         
         yield Field\Select::new(name: 'registry_id', label: trans('Task'))
-            ->options(fn(RegistriesInterface $registries): array => $registries->names());
+            ->options($this->registries->names());
         
         yield Field\Checkboxes::new(name: 'app_ids', label: trans('Runs In Apps'))
             ->options([]);
@@ -168,7 +178,6 @@ class TaskCrudController extends AbstractCrudController
     {
         $runTask = Button\Form::new(label: trans('Run Task'), group: 'entity')
             ->name('runTask')
-            //->method('POST')
             ->linkToRoute('tasks.run', function(EntityInterface $entity): array {
                 return ['id' => $entity->id()];
             });
@@ -182,7 +191,8 @@ class TaskCrudController extends AbstractCrudController
         return [
             Action\Index::new(title: trans('Tasks'))
                 ->addButton($runTask)
-                ->addButton($taskResults)
+                //->ajaxButtonAction('runTask')
+                //->addButton($taskResults)
                 ->removeButton('copy')
                 ->groupButtons(
                     except: ['edit'],
@@ -190,13 +200,19 @@ class TaskCrudController extends AbstractCrudController
                         ->name('more')
                         ->raw(),
                 ),
+            
             Action\Create::new(title: trans('New Task'))
                 ->removeButton('copy', 'new'),
+            
             Action\Store::new(),
+            
             Action\Edit::new(title: trans('Edit Task'))
                 ->removeButton('copy', 'new'),
+            
             Action\Update::new(),
+            
             Action\Delete::new(),
+            
             Action\BulkDelete::new(),
         ];
     }
@@ -211,15 +227,25 @@ class TaskCrudController extends AbstractCrudController
     {
         return [
             ...Filter\Fields::new()->fields($action->fields())->toFilters(),
+            
             Filter\FieldsSortOrder::new(),
+            
             Filter\ModalButton::new()->group('header'),
+            
             Filter\Group::new(name: 'group-columns')->group('modal')->label(trans('Columns'))->open(false),
-            Filter\Columns::new()->group('group-columns'),
+            
+            Filter\Columns::new()
+                ->group('group-columns')
+                ->default('name', 'status', 'registry_id', 'app_ids', 'actions'),
+            
             Filter\EditableColumns::new('status', 'name')->group('group-columns'),
+            
             Filter\Group::new(name: 'group-pagination')->group('modal')->label(trans('Pagination'))->open(false),
+            
             Filter\PaginationItemsPerPage::new()
                 ->group('group-pagination')
                 ->open(false),
+            
             Filter\Pagination::new()->group('footer'),
         ];
     }
