@@ -46,7 +46,7 @@ class TasksTest extends \Tobento\App\Crud\Testing\AbstractCrudTestCase
         $http->response()
             ->assertStatus(200)
             ->assertBodyContains('Tasks')
-            ->assertCrudIndexHeaderColumnsExists(columns: ['id', 'name', 'status', 'registry_id', 'app_ids', 'actions'])
+            ->assertCrudIndexHeaderColumnsExists(columns: ['name', 'status', 'registry_id', 'app_ids', 'actions'])
             ->assertCrudIndexEntityCount(2);
     }
     
