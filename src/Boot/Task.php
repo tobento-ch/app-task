@@ -40,6 +40,7 @@ class Task extends Boot
         Migration::class,
         \Tobento\App\Database\Boot\Database::class,
         \Tobento\App\Schedule\Boot\Schedule::class,
+        \Tobento\App\Translation\Boot\Translation::class,
     ];
 
     /**
