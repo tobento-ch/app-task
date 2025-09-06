@@ -19,6 +19,7 @@ use Tobento\App\Task\Exception\TaskException;
 use Tobento\App\Task\HooksInterface;
 use Tobento\App\Task\RegistryInterface;
 use Tobento\App\Task\TaskEntityInterface;
+use Tobento\App\Task\TaskProcessor;
 use Tobento\Apps\AppsInterface;
 use Tobento\Service\Schedule\ParameterInterface;
 use Tobento\Service\Schedule\ParametersInterface;
@@ -51,16 +52,16 @@ final class RegistryTask extends AbstractTask
      * @param string $appId
      */
     public function __construct(
-        ContainerInterface $container,
+        AppInterface $app,
         RegistryInterface $registry,
         TaskEntityInterface $taskEntity,
         private string $appId,
     ) {
-        $app = $this->getAppById($container, $appId);
-        $app->set(HooksInterface::class, $container->get(HooksInterface::class));
+        $application = $this->getAppById($app->container(), $appId);
         
         $this->task = $registry->createTask(container: $app->container(), taskEntity: $taskEntity);
-        $this->taskProcessor = $app->get(TaskProcessorInterface::class);
+        
+        $this->taskProcessor = new TaskProcessor(app: $application, rootApp: $app);
     }
 
     /**
