@@ -65,7 +65,7 @@ class ScheduleTasks extends Boot
                     foreach($taskEntity->appIds() as $appId) {
 
                         $task = new RegistryTask(
-                            container: $app->container(),
+                            app: $app,
                             registry: $registry,
                             taskEntity: $taskEntity,
                             appId: $appId,
