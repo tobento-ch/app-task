@@ -59,7 +59,7 @@ class TaskRunAction
         
         foreach($taskEntity->appIds() as $appId) {
             
-            $task = new RegistryTask(container: $app->container(), registry: $registry, taskEntity: $taskEntity, appId: $appId);
+            $task = new RegistryTask(app: $app, registry: $registry, taskEntity: $taskEntity, appId: $appId);
             
             $result = $task->getTaskProcessor()->processTask($task);
             
