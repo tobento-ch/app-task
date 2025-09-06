@@ -44,7 +44,7 @@ class ScheduleProcessorTest extends BaseScheduleProcessorTest
         $app->set(TaskProcessorInterface::class, new TaskProcessor(container: $app->container()));
         
         $task = new RegistryTask(
-            container: $app->container(),
+            app: $app,
             registry: new Task(
                 name: 'foo',
                 task: new CallableTask(
