@@ -1,5 +1,5 @@
 {
-    "Active": "Aktiv",
+    "active": "aktiv",
     "After running task": "Nach dem Ausführen der Aufgabe",
     "Apps": "Apps",
     "At a certain time": "Zu einer bestimmten Zeit",
@@ -21,7 +21,7 @@
     "No": "Nein",
     "Only in the months": "Nur in den Monaten",
     "Only on the days": "Nur an den Tagen",
-    "Pausing": "pausieren",
+    "pausing": "pausieren",
     "Prune Auth Tokens": "Authentifizierungstoken bereinigen",
     "Result": "Ergebnis",
     "Run At": "Ausgeführt um",
