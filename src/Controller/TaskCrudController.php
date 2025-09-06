@@ -191,8 +191,8 @@ class TaskCrudController extends AbstractCrudController
         return [
             Action\Index::new(title: trans('Tasks'))
                 ->addButton($runTask)
-                //->ajaxButtonAction('runTask')
-                //->addButton($taskResults)
+                ->ajaxButtonAction('runTask')
+                ->addButton($taskResults)
                 ->removeButton('copy')
                 ->groupButtons(
                     except: ['edit'],
