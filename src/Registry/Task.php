@@ -23,6 +23,7 @@ use Tobento\App\Task\Crud\FrequencyFields;
 use Tobento\App\Task\HooksInterface;
 use Tobento\App\Task\RegistryInterface;
 use Tobento\App\Task\Schedule\EntityCronExpression;
+use Tobento\App\Task\TaskEntity;
 use Tobento\App\Task\TaskEntityInterface;
 use Tobento\Service\Schedule\Parameter;
 use Tobento\Service\Schedule\ParameterInterface;
@@ -34,6 +35,11 @@ use function Tobento\App\Translation\trans;
 
 class Task implements RegistryInterface
 {
+    /**
+     * @var null|TaskEntityInterface
+     */
+    protected null|TaskEntityInterface $taskEntity = null;
+    
     /**
      * Create a new Task instance.
      *
@@ -130,6 +136,8 @@ class Task implements RegistryInterface
      */
     public function createTask(ContainerInterface $container, TaskEntityInterface $taskEntity): TaskInterface
     {
+        $this->taskEntity = $taskEntity;
+        
         $task = $this->getTask()
             ->id($taskEntity->taskId())
             ->name($taskEntity->name())
@@ -179,6 +187,16 @@ class Task implements RegistryInterface
      */
     protected function getTask(): AbstractTask
     {
-        return $this->task;
+        return clone $this->task;
     }
+    
+    /**
+     * Returns the task entity.
+     *
+     * @return TaskEntityInterface
+     */
+    protected function taskEntity(): TaskEntityInterface
+    {
+        return !is_null($this->taskEntity) ? $this->taskEntity : new TaskEntity();
+    }    
 }
