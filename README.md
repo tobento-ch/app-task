@@ -270,6 +270,11 @@ Hooks can be selected while scheduling tasks for the following events:
 * ```after``` running a task
 * when a task ```failed```
 
+> [!CAUTION]
+> Hooks events will always be resolved using the app container where [tasks are scheduled](#schedule-tasks-feature), while the main task process might use an app specific container.
+
+and not any specific app container.
+
 ### Mail Hook
 
 With the mail hook you can send mails supporting ```before```, ```after``` and ```failed``` events.
