@@ -145,7 +145,8 @@ class TaskResultCrudController extends AbstractCrudController
         return [
             ...Filter\Fields::new()->fields($action->fields())->toFilters(),
             
-            Filter\FieldsSortOrder::new(),
+            Filter\FieldsSortOrder::new()
+                ->addDefault(name: 'run_at', value: 'desc'),
             
             Filter\ModalButton::new()->group('header'),
             
