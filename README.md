@@ -40,7 +40,7 @@ composer require tobento/app-task
 
 ## Requirements
 
-- PHP 8.0 or greater
+- PHP 8.4 or greater
 
 # Documentation
 
@@ -66,7 +66,7 @@ use Tobento\App\Task\TaskRepositoryInterface;
 use Tobento\App\Task\TaskResultRepositoryInterface;
 
 // Create the app
-$app = (new AppFactory())->createApp();
+$app = new AppFactory()->createApp();
 
 // Add directories:
 $app->dirs()
