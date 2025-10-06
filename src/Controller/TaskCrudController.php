@@ -57,24 +57,24 @@ class TaskCrudController extends AbstractCrudController
     /**
      * Returns the configured fields.
      *
-     * @param string $actionName
+     * @param ActionInterface $action
      * @return iterable<FieldInterface>|FieldsInterface
      */
     protected function configureFields(ActionInterface $action): iterable|FieldsInterface
     {
         if (in_array($action->name(), ['create', 'store'])) {
-            yield Field\PrimaryId::new(name: 'id')
+            yield new Field\PrimaryId(name: 'id')
                 ->group(trans('Task'));
             
-            yield Field\Value::new(name: 'status', label: trans('Status'))
+            yield new Field\Value(name: 'status', label: trans('Status'))
                 ->group(trans('Task'))
                 ->value('pausing');
             
-            yield Field\Text::new(name: 'name')
+            yield new Field\Text(name: 'name')
                 ->group(trans('Task'))
                 ->validate('required|string|htmlclean|maxLen:200');
             
-            yield Field\Select::new(name: 'registry_id', label: trans('Task'))
+            yield new Field\Select(name: 'registry_id', label: trans('Task'))
                 ->group(trans('Task'))
                 ->options(fn(RegistriesInterface $registries): array => $registries->names())
                 ->validate('required');
@@ -94,18 +94,18 @@ class TaskCrudController extends AbstractCrudController
             
             $registry = $this->registries->get($registryId);
             
-            yield Field\PrimaryId::new(name: 'id');
+            yield new Field\PrimaryId(name: 'id');
             
-            yield Field\Text::new(name: 'name')
+            yield new Field\Text(name: 'name')
                 ->group(trans('Task'))
                 ->validate('required|string|htmlclean|maxLen:200');
             
-            yield Field\Text::new(name: 'registry_id', label: trans('Task'))
+            yield new Field\Text(name: 'registry_id', label: trans('Task'))
                 ->group(trans('Task'))
                 ->value($registry->name())
                 ->disabled();
             
-            yield Field\Select::new(name: 'status', label: trans('Status'))
+            yield new Field\Select(name: 'status', label: trans('Status'))
                 ->group(trans('Task'))
                 ->options([
                     'active' => trans('active'),
@@ -121,11 +121,11 @@ class TaskCrudController extends AbstractCrudController
         }
         
         // Index, delete action:
-        yield Field\PrimaryId::new(name: 'id');
+        yield new Field\PrimaryId(name: 'id');
         
-        yield Field\Text::new(name: 'name');
+        yield new Field\Text(name: 'name');
         
-        yield Field\Select::new(name: 'status', label: trans('Status'))
+        yield new Field\Select(name: 'status', label: trans('Status'))
             ->options([
                 'active' => trans('active'),
                 'pausing' => trans('pausing'),
@@ -135,13 +135,13 @@ class TaskCrudController extends AbstractCrudController
                 'pausing' => 'text-info',
             ]));
         
-        yield Field\Select::new(name: 'registry_id', label: trans('Task'))
+        yield new Field\Select(name: 'registry_id', label: trans('Task'))
             ->options($this->registries->names());
         
-        yield Field\Checkboxes::new(name: 'app_ids', label: trans('Runs In Apps'))
+        yield new Field\Checkboxes(name: 'app_ids', label: trans('Runs In Apps'))
             ->options([]);
         
-        yield Field\Value::new(name: 'next_run_times', label: trans('Next Run Times'))
+        yield new Field\Value(name: 'next_run_times', label: trans('Next Run Times'))
             ->storable(false)
             ->indexable(true)
             ->editable(false)
@@ -176,44 +176,44 @@ class TaskCrudController extends AbstractCrudController
      */
     protected function configureActions(): iterable|ActionsInterface
     {
-        $runTask = Button\Form::new(label: trans('Run Task'), group: 'entity')
+        $runTask = new Button\Form(label: trans('Run Task'), group: 'entity')
             ->name('runTask')
             ->linkToRoute('tasks.run', function(EntityInterface $entity): array {
                 return ['id' => $entity->id()];
             });
         
-        $taskResults = Button\Link::new(label: trans('Task Results'), group: 'entity')
+        $taskResults = new Button\Link(label: trans('Task Results'), group: 'entity')
             ->name('results')
             ->linkToRoute('task-results.index', function(EntityInterface $entity): array {
                 return ['filter' => ['field' => ['task_id' => $entity->get('task_id')]]];
             });
         
         return [
-            Action\Index::new(title: trans('Tasks'))
+            new Action\Index(title: trans('Tasks'))
                 ->addButton($runTask)
                 ->ajaxButtonAction('runTask')
                 ->addButton($taskResults)
                 ->removeButton('copy')
                 ->groupButtons(
                     except: ['edit'],
-                    button: Button\Dropdown::new(label: '', icon: 'dots', group: 'entity')
+                    button: new Button\Dropdown(label: '', icon: 'dots', group: 'entity')
                         ->name('more')
                         ->raw(),
                 ),
             
-            Action\Create::new(title: trans('New Task'))
+            new Action\Create(title: trans('New Task'))
                 ->removeButton('copy', 'new'),
             
-            Action\Store::new(),
+            new Action\Store(),
             
-            Action\Edit::new(title: trans('Edit Task'))
+            new Action\Edit(title: trans('Edit Task'))
                 ->removeButton('copy', 'new'),
             
-            Action\Update::new(),
+            new Action\Update(),
             
-            Action\Delete::new(),
+            new Action\Delete(),
             
-            Action\BulkDelete::new(),
+            new Action\BulkDelete(),
         ];
     }
     
@@ -226,27 +226,27 @@ class TaskCrudController extends AbstractCrudController
     protected function configureFilters(ActionInterface $action): iterable|FiltersInterface
     {
         return [
-            ...Filter\Fields::new()->fields($action->fields())->toFilters(),
+            ...new Filter\Fields()->fields($action->fields())->toFilters(),
             
-            Filter\FieldsSortOrder::new(),
+            new Filter\FieldsSortOrder(),
             
-            Filter\ModalButton::new()->group('header'),
+            new Filter\ModalButton()->group('header'),
             
-            Filter\Group::new(name: 'group-columns')->group('modal')->label(trans('Columns'))->open(false),
+            new Filter\Group(name: 'group-columns')->group('modal')->label(trans('Columns'))->open(false),
             
-            Filter\Columns::new()
+            new Filter\Columns()
                 ->group('group-columns')
                 ->default('name', 'status', 'registry_id', 'app_ids', 'actions'),
             
-            Filter\EditableColumns::new('status', 'name')->group('group-columns'),
+            new Filter\EditableColumns('status', 'name')->group('group-columns'),
             
-            Filter\Group::new(name: 'group-pagination')->group('modal')->label(trans('Pagination'))->open(false),
+            new Filter\Group(name: 'group-pagination')->group('modal')->label(trans('Pagination'))->open(false),
             
-            Filter\PaginationItemsPerPage::new()
+            new Filter\PaginationItemsPerPage()
                 ->group('group-pagination')
                 ->open(false),
             
-            Filter\Pagination::new()->group('footer'),
+            new Filter\Pagination()->group('footer'),
         ];
     }
 }

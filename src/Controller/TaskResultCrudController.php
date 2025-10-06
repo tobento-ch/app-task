@@ -26,11 +26,6 @@ use Tobento\App\Crud\Field\FieldsInterface;
 use Tobento\App\Crud\Filter;
 use Tobento\App\Crud\Filter\FiltersInterface;
 use Tobento\App\Crud\Filter\FilterInterface;
-use Tobento\App\Crud\Input\InputInterface;
-use Tobento\App\Http\Exception\HttpException;
-use Tobento\App\Task\HooksInterface;
-use Tobento\App\Task\RegistriesInterface;
-use Tobento\App\Task\TaskEntity;
 use Tobento\App\Task\TaskResultRepositoryInterface;
 use function Tobento\App\Translation\trans;
 
@@ -45,11 +40,9 @@ class TaskResultCrudController extends AbstractCrudController
      * Create a new TaskResultCrudController instance.
      *
      * @param TaskResultRepositoryInterface $repository
-     * @param RegistriesInterface $registries
      */
     public function __construct(
         TaskResultRepositoryInterface $repository,
-        protected RegistriesInterface $registries,
     ) {
         $this->repository = $repository;
     }
@@ -57,7 +50,7 @@ class TaskResultCrudController extends AbstractCrudController
     /**
      * Returns the configured fields.
      *
-     * @param string $actionName
+     * @param ActionInterface $action
      * @return iterable<FieldInterface>|FieldsInterface
      */
     protected function configureFields(ActionInterface $action): iterable|FieldsInterface
@@ -67,14 +60,14 @@ class TaskResultCrudController extends AbstractCrudController
         }
         
         if ($action->name() !== 'index') {
-            yield Field\PrimaryId::new(name: 'id');
+            yield new Field\PrimaryId(name: 'id');
         }
         
-        yield Field\Text::new(name: 'task_id', label: trans('Task ID'))
+        yield new Field\Text(name: 'task_id', label: trans('Task ID'))
             ->type('number')
             ->group(trans('Task'));
         
-        yield Field\Select::new(name: 'status', label: trans('Status'))
+        yield new Field\Select(name: 'status', label: trans('Status'))
             ->group(trans('Task'))
             ->options([
                 'successful' => trans('successful'),
@@ -87,17 +80,17 @@ class TaskResultCrudController extends AbstractCrudController
                 'skipped' => 'text-info',
             ]));
         
-        yield Field\Text::new(name: 'run_at', label: trans('Run At'))
+        yield new Field\Text(name: 'run_at', label: trans('Run At'))
             ->group(trans('Task'))
             ->formatValue(new Field\Formatter\Date(format: 'EEEE, dd. MMMM yyyy, HH:mm'));
         
-        yield Field\Text::new(name: 'runtime_seconds', label: trans('Runtime In Seconds'))
+        yield new Field\Text(name: 'runtime_seconds', label: trans('Runtime In Seconds'))
             ->group(trans('Task'));
         
-        yield Field\Text::new(name: 'memory_usage_bytes', label: trans('Memory Usage In Bytes'))
+        yield new Field\Text(name: 'memory_usage_bytes', label: trans('Memory Usage In Bytes'))
             ->group(trans('Task'));
         
-        yield Field\Textarea::new(name: 'result', label: trans('Result'))
+        yield new Field\Textarea(name: 'result', label: trans('Result'))
             ->group(trans('Task'));
     }
     
@@ -108,7 +101,7 @@ class TaskResultCrudController extends AbstractCrudController
      */
     protected function configureActions(): iterable|ActionsInterface
     {
-        $editTask = Button\Link::new(label: trans('Edit Task'), group: 'entity')
+        $editTask = new Button\Link(label: trans('Edit Task'), group: 'entity')
             ->name('edit.task')
             ->linkToRoute('tasks.edit', function(EntityInterface $entity): null|array {
                 $taskId = explode(':', $entity->get('task_id', '0'));
@@ -117,20 +110,20 @@ class TaskResultCrudController extends AbstractCrudController
             });
         
         return [
-            Action\Index::new(title: trans('Task Results'))
+            new Action\Index(title: trans('Task Results'))
                 ->addButton($editTask)
                 ->groupButtons(
                     except: ['show'],
-                    button: Button\Dropdown::new(label: '', icon: 'dots', group: 'entity')
+                    button: new Button\Dropdown(label: '', icon: 'dots', group: 'entity')
                         ->name('more')
                         ->raw(),
                 ),
             
-            Action\Delete::new(),
+            new Action\Delete(),
             
-            Action\BulkDelete::new(),
+            new Action\BulkDelete(),
             
-            Action\Show::new(trans('Task Result')),
+            new Action\Show(trans('Task Result')),
         ];
     }
     
@@ -143,24 +136,24 @@ class TaskResultCrudController extends AbstractCrudController
     protected function configureFilters(ActionInterface $action): iterable|FiltersInterface
     {
         return [
-            ...Filter\Fields::new()->fields($action->fields())->toFilters(),
+            ...new Filter\Fields()->fields($action->fields())->toFilters(),
             
-            Filter\FieldsSortOrder::new()
+            new Filter\FieldsSortOrder()
                 ->addDefault(name: 'run_at', value: 'desc'),
             
-            Filter\ModalButton::new()->group('header'),
+            new Filter\ModalButton()->group('header'),
             
-            Filter\Group::new(name: 'group-columns')->group('modal')->label(trans('Columns'))->open(false),
+            new Filter\Group(name: 'group-columns')->group('modal')->label(trans('Columns'))->open(false),
             
-            Filter\Columns::new()->group('group-columns'),
+            new Filter\Columns()->group('group-columns'),
             
-            Filter\Group::new(name: 'group-pagination')->group('modal')->label(trans('Pagination'))->open(false),
+            new Filter\Group(name: 'group-pagination')->group('modal')->label(trans('Pagination'))->open(false),
             
-            Filter\PaginationItemsPerPage::new()
+            new Filter\PaginationItemsPerPage()
                 ->group('group-pagination')
                 ->open(false),
             
-            Filter\Pagination::new(maxItemsPerPage: 2000)->group('footer'),
+            new Filter\Pagination(maxItemsPerPage: 2000)->group('footer'),
         ];
     }
 }

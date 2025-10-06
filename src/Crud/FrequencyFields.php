@@ -30,30 +30,30 @@ class FrequencyFields extends Field\Group
     public function fields(FieldInterface ...$fields): static
     {
         $this->fields = [
-            Field\Text::new(name: 'data.frequency.time', label: trans('At a certain time'))
+            new Field\Text(name: 'data.frequency.time', label: trans('At a certain time'))
                 ->type('time')
                 ->validate([
                     'string',
                     ['dateFormat', ['H:i']],
                 ]),
             
-            Field\Text::new(name: 'data.frequency.hourly', label: trans('Hourly'))
+            new Field\Text(name: 'data.frequency.hourly', label: trans('Hourly'))
                 ->validate('minNum:0|maxNum:59')
                 ->infoText(trans('Hourly to the minute: 0-59')),
             
-            Field\Text::new(name: 'data.frequency.minutely', label: trans('Every x minute(s)'))
+            new Field\Text(name: 'data.frequency.minutely', label: trans('Every x minute(s)'))
                 ->validate('minNum:1|maxLen:10'),
             
-            Field\Group::new(name: 'data.frequency.between', label: trans('Between times'))
+            new Field\Group(name: 'data.frequency.between', label: trans('Between times'))
                 ->fields(
-                    Field\Text::new(name: 'from', label: trans('From'))
+                    new Field\Text(name: 'from', label: trans('From'))
                         ->type('time')
                         ->attributes(['step' => '3600'])
                         ->validate([
                             'string',
                             ['dateFormat', ['H:i']],
                         ]),
-                    Field\Text::new(name: 'to', label: trans('To'))
+                    new Field\Text(name: 'to', label: trans('To'))
                         ->type('time')
                         ->attributes(['step' => '3600'])
                         ->validate([
@@ -66,7 +66,7 @@ class FrequencyFields extends Field\Group
                 ->displayAsField()
                 ->displayAsCard(),
             
-            Field\Checkboxes::new(name: 'data.frequency.days', label: trans('Only on the days'))
+            new Field\Checkboxes(name: 'data.frequency.days', label: trans('Only on the days'))
                 ->options(function(DateFormatter $df): array {
                     return [
                         1 => $df->toWeekday(number: 1, pattern: 'EEEE'),
@@ -79,7 +79,7 @@ class FrequencyFields extends Field\Group
                     ];
                 }),
             
-            Field\Checkboxes::new(name: 'data.frequency.months', label: trans('Only in the months'))
+            new Field\Checkboxes(name: 'data.frequency.months', label: trans('Only in the months'))
                 ->options(function(DateFormatter $df): array {
                     return [
                         1 => $df->toMonth(number: 1, pattern: 'EEEE'),
