@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 use Tobento\App\Task\Schedule\EntityCronExpression;
 use Tobento\App\Task\TaskEntity;
 
-class TaskEntityTest extends TestCase
+class EntityCronExpressionTest extends TestCase
 {
     public function testTime()
     {
