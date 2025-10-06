@@ -28,7 +28,6 @@ class Backend extends AppBoot
      */
     protected const APP_BOOT = [
         \Tobento\App\Boot\App::class,
-        \Tobento\App\Boot\ErrorHandling::class,
         \Tobento\App\Task\Boot\Task::class,
     ];
     
