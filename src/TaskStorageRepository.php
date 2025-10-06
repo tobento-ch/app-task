@@ -33,12 +33,12 @@ class TaskStorageRepository extends StorageRepository implements TaskRepositoryI
     protected function configureColumns(): iterable|ColumnsInterface
     {
         return [
-            Column\Id::new(),
-            Column\Text::new('status')->type(length: 100),
-            Column\Text::new('name'),
-            Column\Text::new('registry_id'),
-            Column\Json::new('data'),
-            Column\Json::new('app_ids'),
+            new Column\Id(),
+            new Column\Text('status')->type(length: 100),
+            new Column\Text('name'),
+            new Column\Text('registry_id'),
+            new Column\Json('data'),
+            new Column\Json('app_ids'),
         ];
     }
     

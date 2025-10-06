@@ -28,15 +28,15 @@ class TaskResultStorageRepository extends StorageRepository implements TaskResul
     protected function configureColumns(): iterable|ColumnsInterface
     {
         return [
-            Column\Id::new(),
-            Column\Text::new('status')->type(length: 100),
-            Column\Text::new('task_id'),
-            Column\Datetime::new('run_at'),
-            Column\FloatCol::new('runtime_seconds')
+            new Column\Id(),
+            new Column\Text('status')->type(length: 100),
+            new Column\Text('task_id'),
+            new Column\Datetime('run_at'),
+            new Column\FloatCol('runtime_seconds')
                 ->type(nullable: true, precision: 3)
                 ->read(fn (null|float $value): float => is_null($value) ? 0 : round($value, 3)),
-            Column\Text::new('memory_usage_bytes')->type(nullable: true),
-            Column\Text::new(name: 'result', type: 'text'),
+            new Column\Text('memory_usage_bytes')->type(nullable: true),
+            new Column\Text(name: 'result', type: 'text'),
         ];
     }
 }
