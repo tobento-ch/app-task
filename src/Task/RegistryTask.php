@@ -46,7 +46,7 @@ final class RegistryTask extends AbstractTask
     /**
      * Create a new RegistryTask instance.
      *
-     * @param ContainerInterface $container
+     * @param AppInterface $app
      * @param RegistryInterface $registry
      * @param TaskEntityInterface $taskEntity
      * @param string $appId
