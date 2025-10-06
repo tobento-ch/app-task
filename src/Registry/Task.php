@@ -73,42 +73,42 @@ class Task implements RegistryInterface
      */
     public function configureFields(ActionInterface $action): iterable|FieldsInterface
     {
-        yield Field\Checkboxes::new(name: 'app_ids', label: trans('Run Task In App'))
+        yield new Field\Checkboxes(name: 'app_ids', label: trans('Run Task In App'))
             ->group(trans('Apps'))
             ->options(array_combine($this->supportedAppIds, $this->supportedAppIds))
             ->validate('required|minItems:1');
         
-        yield Field\Select::new(name: 'data.timezone', label: trans('Timezone'))
+        yield new Field\Select(name: 'data.timezone', label: trans('Timezone'))
             ->group(trans('Schedule'))
             ->options(fn() => array_combine(\DateTimeZone::listIdentifiers(), \DateTimeZone::listIdentifiers()))
             ->selected(value: fn(ClockInterface $c) => $c->now()->getTimezone()->getName(), action: 'edit')
             ->validate('required');
         
-        yield Field\Text::new(name: 'data.cron', label: trans('Cron Expression'))
+        yield new Field\Text(name: 'data.cron', label: trans('Cron Expression'))
             ->group(trans('Schedule'))
             ->validate('string')
             ->infoText(trans('Leave empty to use the frequencies below.'));
         
-        yield FrequencyFields::new(name: 'frequencies')
+        yield new FrequencyFields(name: 'frequencies')
             ->group(trans('Frequencies'))
             ->validate('string');
 
-        yield Field\Radios::new(name: 'data.monitor', label: trans('Monitor Task'))
+        yield new Field\Radios(name: 'data.monitor', label: trans('Monitor Task'))
             ->group(trans('Options'))
             ->options(['0' => 'No', '1' => 'Yes'])
             ->validate('required')
             ->selected(value: '1', action: 'create|edit')
             ->displayInline();
 
-        yield Field\Checkboxes::new(name: 'data.task_before', label: trans('Before running task'))
+        yield new Field\Checkboxes(name: 'data.task_before', label: trans('Before running task'))
             ->group(trans('Hooks'))
             ->options(fn(HooksInterface $hooks): array => $hooks->type('before')->names());
         
-        yield Field\Checkboxes::new(name: 'data.task_after', label: trans('After running task'))
+        yield new Field\Checkboxes(name: 'data.task_after', label: trans('After running task'))
             ->group(trans('Hooks'))
             ->options(fn(HooksInterface $hooks): array => $hooks->type('after')->names());
         
-        yield Field\Checkboxes::new(name: 'data.task_failed', label: trans('When task failed'))
+        yield new Field\Checkboxes(name: 'data.task_failed', label: trans('When task failed'))
             ->group(trans('Hooks'))
             ->options(fn(HooksInterface $hooks): array => $hooks->type('failed')->names());
     }
