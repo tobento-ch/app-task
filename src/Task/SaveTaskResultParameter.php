@@ -67,7 +67,7 @@ class SaveTaskResultParameter extends Parameter implements AfterTaskHandler, Fai
     /**
      * Saves task result.
      *
-     * @param TaskResultInterface $task
+     * @param TaskResultInterface $result
      * @param TaskResultRepositoryInterface $repository
      * @return void
      */
