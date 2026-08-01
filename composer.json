@@ -1,6 +1,6 @@
 {
     "name": "tobento/app-task",
-    "version": "2.0",
+    "version": "2.0.1",
     "type": "library",
     "description": "App task manager.",
     "keywords": [
@@ -32,13 +32,13 @@
         "tobento/app-translation": "^2.0",
         "tobento/app-user": "^2.0",
         "tobento/app-view": "^2.0",
+        "tobento/apps": "^2.0",
         "tobento/service-repository": "^2.0",
         "tobento/service-repository-storage": "^2.0"
     },  
     "require-dev": {
         "phpunit/phpunit": "^12.3",
         "vimeo/psalm": "^6.13",
-        "tobento/apps": "^2.0",
         "tobento/app-event": "^2.0",
         "tobento/app-testing": "^2.0"
     },
