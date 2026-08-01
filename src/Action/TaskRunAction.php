@@ -27,6 +27,15 @@ use Tobento\Service\Translation\TranslatorInterface;
 class TaskRunAction
 {
     /**
+     * Create a new instance.
+     *
+     * @param bool $findAppRecursive
+     */
+    public function __construct(
+        protected bool $findAppRecursive = false,
+    ) {}
+    
+    /**
      * Runs the task.
      *
      * @param int|string $id The task id to run.
@@ -59,7 +68,13 @@ class TaskRunAction
         
         foreach($taskEntity->appIds() as $appId) {
             
-            $task = new RegistryTask(app: $app, registry: $registry, taskEntity: $taskEntity, appId: $appId);
+            $task = new RegistryTask(
+                app: $app,
+                registry: $registry,
+                taskEntity: $taskEntity,
+                appId: $appId,
+                findAppRecursive: $this->findAppRecursive,
+            );
             
             $result = $task->getTaskProcessor()->processTask($task);
             

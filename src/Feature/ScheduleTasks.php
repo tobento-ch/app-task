@@ -33,6 +33,15 @@ class ScheduleTasks extends Boot
     public const BOOT = [
         \Tobento\App\User\Boot\User::class,
     ];
+    
+    /**
+     * Create a new instance.
+     *
+     * @param bool $findAppRecursive
+     */
+    public function __construct(
+        protected bool $findAppRecursive = false,
+    ) {}
 
     /**
      * Boot application services.
@@ -44,6 +53,8 @@ class ScheduleTasks extends Boot
     {
         $app->set(ScheduleProcessorInterface::class, ScheduleProcessor::class);
         
+        $findAppRecursive = $this->findAppRecursive;
+        
         $app->on(
             ScheduleInterface::class,
             static function(
@@ -51,7 +62,7 @@ class ScheduleTasks extends Boot
                 AppInterface $app,
                 TaskRepositoryInterface $taskRepository,
                 RegistriesInterface $registries,
-            ): void {
+            ) use ($findAppRecursive): void {
                 $tasks = $taskRepository->findAll(where: ['status' => 'active']);
                 
                 foreach($tasks as $taskEntity) {
@@ -69,6 +80,7 @@ class ScheduleTasks extends Boot
                             registry: $registry,
                             taskEntity: $taskEntity,
                             appId: $appId,
+                            findAppRecursive: $findAppRecursive,
                         );
 
                         $schedule->task($task);

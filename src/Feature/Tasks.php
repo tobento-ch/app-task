@@ -45,12 +45,14 @@ class Tasks extends Boot
      * @param null|string $menu The menu name or null if none.
      * @param string $menuLabel The menu label.
      * @param null|string $menuParent The menu parent or null if none.
+     * @param bool $findAppRecursive
      * @param bool $withAcl
      */
     public function __construct(
         protected null|string $menu = 'main',
         protected string $menuLabel = 'Tasks',
         protected null|string $menuParent = null,
+        protected bool $findAppRecursive = false,
         protected bool $withAcl = true,
     ) {}
 
@@ -73,6 +75,9 @@ class Tasks extends Boot
         if ($this->withAcl === false) {
             $acl->addPermissions(['tasks', 'tasks.create', 'tasks.edit', 'tasks.delete', 'tasks.run']);
         }
+        
+        $app->set(\Tobento\App\Task\Action\TaskRunAction::class)
+            ->with(['findAppRecursive' => $this->findAppRecursive]);
 
         // Routes:
         $router = $app->get(RouterInterface::class);
