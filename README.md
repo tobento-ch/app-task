@@ -1,6 +1,35 @@
 # App Task
 
-The app task lets you schedule tasks from a web interface.
+App Task provides the following features:
+
+* [manage and schedule tasks](#tasks-feature) directly from a web interface
+* [view task results](#task-results-feature) with detailed result reporting
+* [register scheduled tasks](#schedule-tasks-feature) using the built-in scheduler
+
+## Zero-Config Bootstrapping
+
+The Task system works out-of-the-box with sensible defaults.
+
+Simply register the [Task Boot](#task-boot) in your application, and the full
+task management UI becomes available immediately - no additional configuration
+required.
+
+All built-in features are automatically discovered, registered, and ready to use.
+You can create tasks, edit schedules, run tasks manually, and process scheduled
+tasks without writing any custom code.
+
+> **Note**  
+> Scheduled tasks require a cron job to be processed.  
+> See [Running Scheduled Tasks](#running-scheduled-tasks) for details.
+
+You only need to customize configuration if you want to override defaults such as:
+
+- enabling recursive app lookup (`findAppRecursive`)
+- permissions and access control
+- custom task registries
+- custom task processors
+- multi-app support (defining which apps tasks may run in)
+- disabling scheduled task processing
 
 ## Table of Contents
 
@@ -115,12 +144,32 @@ In the [config file](#task-config) you can configure this feature:
         // A menu parent name (e.g. 'system') or null if none.
         menuParent: null,
         
+        // You may enable recursive app lookup:
+        findAppRecursive: false, // default
+        
         // you may disable the ACL while testing for instance,
         // otherwise only users with the right permissions can access the page.
         withAcl: false,
     ),
 ],
 ```
+
+**Recursive App Lookup**
+
+The `findAppRecursive` option controls how the tasks feature resolves the correct application when running or scheduling tasks.
+
+`findAppRecursive: false` // default
+
+If set to `false`, the task's app is resolved directly using `AppFinder::findById()`.  
+This works for most setups, including typical multi-app projects (e.g., backend + frontend).
+
+If set to `true`, the tasks feature resolves the app using `AppFinder::findByIdRecursive()`,  
+which is only needed if your application structure contains nested or hierarchical apps.
+
+See [App Finder](https://github.com/tobento-ch/apps#app-finder)
+
+> **Note**  
+> Recursive lookup is rarely needed. Enable it only if your app structure involves nested apps that require recursive resolution.
 
 **ACL Permissions**
 
@@ -164,7 +213,10 @@ If using the [App Backend](https://github.com/tobento-ch/app-backend), you can a
 
 ### Schedule Tasks Feature
 
-The schedule tasks feature registers scheduled tasked to the schedule. If you want to stop any scheduled tasks from being processed, uncomment it in the [task config](#task-config), which may be useful in ceratin use cases.
+The schedule tasks feature registers active tasks to the scheduler.  
+If you want to temporarily stop scheduled tasks from being processed, you may
+disable this feature in the [task config](#task-config), which can be useful in
+certain scenarios.
 
 **Config**
 
@@ -172,9 +224,30 @@ In the [config file](#task-config) you can configure this feature:
 
 ```php
 'features' => [
-    Feature\ScheduleTasks::class,
+    new Feature\ScheduleTasks(
+        // You may enable recursive app lookup:
+        findAppRecursive: false, // default
+    ),
 ],
 ```
+
+**Recursive App Lookup**
+
+The `findAppRecursive` option controls how the tasks feature resolves the correct application when scheduling or running tasks.
+
+`findAppRecursive: false` // default
+
+If set to `false`, the task's app is resolved directly using `AppFinder::findById()`.  
+This works for most setups, including typical multi-app projects (e.g., backend + frontend).
+
+If set to `true`, the tasks feature resolves the app using `AppFinder::findByIdRecursive()`,  
+which is only needed if your application structure contains nested or hierarchical apps.
+
+See [App Finder](https://github.com/tobento-ch/apps#app-finder)
+
+> **Note**  
+> Recursive lookup is rarely needed. Enable it only if your app structure involves nested apps that require recursive resolution.
+
 
 ## Available Registries
 
