@@ -20,6 +20,7 @@ use Tobento\App\Task\HooksInterface;
 use Tobento\App\Task\RegistryInterface;
 use Tobento\App\Task\TaskEntityInterface;
 use Tobento\App\Task\TaskProcessor;
+use Tobento\Apps\AppFinder;
 use Tobento\Apps\AppsInterface;
 use Tobento\Service\Schedule\ParameterInterface;
 use Tobento\Service\Schedule\ParametersInterface;
@@ -50,14 +51,24 @@ final class RegistryTask extends AbstractTask
      * @param RegistryInterface $registry
      * @param TaskEntityInterface $taskEntity
      * @param string $appId
+     * @param bool $findAppRecursive
      */
     public function __construct(
         AppInterface $app,
         RegistryInterface $registry,
         TaskEntityInterface $taskEntity,
         private string $appId,
+        bool $findAppRecursive = false,
     ) {
-        $application = $this->getAppById($app->container(), $appId);
+        $appFinder = new AppFinder($app);
+
+        $application = $findAppRecursive
+            ? $appFinder->findByIdRecursive(id: $appId)
+            : $appFinder->findById(id: $appId);
+        
+        if ($application === null) {
+            throw new TaskException(sprintf('App with the id %s not found.', $appId));
+        }
         
         $this->task = $registry->createTask(container: $app->container(), taskEntity: $taskEntity);
         
@@ -153,44 +164,5 @@ final class RegistryTask extends AbstractTask
     {
         $this->task->parameter($parameter);
         return $this;
-    }
-    
-    /**
-     * Return the app by id.
-     *
-     * @param ContainerInterface $container
-     * @param string $appId
-     * @return AppInterface
-     * @throws \Throwable
-     */
-    protected function getAppById(ContainerInterface $container, string $appId): AppInterface
-    {
-        $app = $container->get(AppInterface::class);
-        
-        if ($appId === $app->id()) {
-            return $app;
-        }
-        
-        if (! $container->has(AppsInterface::class)) {
-            throw new TaskException('Apps not exists.');
-        }
-        
-        $apps = $container->get(AppsInterface::class);
-        
-        if ($appId === 'root') {
-            if (! $apps->has($app->id())) {
-                throw new TaskException(sprintf('App with the id %s not found.', $app->id()));
-            }
-            
-            return $apps->get($app->id())->rootApp();
-        }
-        
-        if (! $apps->has($appId)) {
-            throw new TaskException(sprintf('App with the id %s not found.', $appId));
-        }
-        
-        $app = $apps->get($appId)->app();
-        $app->booting();
-        return $app;
     }
 }
